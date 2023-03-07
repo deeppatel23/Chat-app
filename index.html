@@ -4,8 +4,10 @@
    <script src="/socket.io/socket.io.js"></script>
    <script>
       var socket = io();
-      socket.on('test', function(data){document.write(data.description)});
-      socket.emit('clientEvent', 'Sent an event from the client!');
+      socket.on('newclientconnect',function(data){
+               document.body.innerHTML = '';
+               document.write(data.description);
+      });
    </script>
    <body>Hello world</body>
 </html>

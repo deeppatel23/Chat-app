@@ -7,22 +7,15 @@ app.get('/', function(req, res){
    res.sendFile('/Users/deeppatel/Desktop/Work/chat-app/index.html');
 });
 
-//Whenever someone connects this gets executed
+var clients = 0;
+
 io.on('connection', function(socket){
-   console.log('A user connected');
-
-   // Send a message after a timeout of 4 seconds
-   setTimeout(function(){
-      socket.emit('test', { description: 'A custom event named test is fired!'});
-   }, 4000);
-
-   socket.on('clientEvent', function(data){
-      console.log(data);
-   });
-   
-   //Whenever someone disconnects this piece of code executed
+   clients++;
+   socket.emit('newclientconnect',{ description: 'Hey, welcome!'});
+   socket.broadcast.emit('newclientconnect',{ description: clients + ' clients connected!'})
    socket.on('disconnect', function () {
-      console.log('A user disconnected');
+      clients--;
+      socket.broadcast.emit('newclientconnect',{ description: clients + ' clients connected!'})
    });
 });
 
