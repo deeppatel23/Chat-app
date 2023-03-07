@@ -13,9 +13,12 @@ io.on('connection', function(socket){
 
    // Send a message after a timeout of 4 seconds
    setTimeout(function(){
-      socket.send('User is inactive for 4 seconds');
+      socket.emit('test', { description: 'A custom event named test is fired!'});
    }, 4000);
 
+   socket.on('clientEvent', function(data){
+      console.log(data);
+   });
    
    //Whenever someone disconnects this piece of code executed
    socket.on('disconnect', function () {
