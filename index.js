@@ -10,6 +10,12 @@ app.get('/', function(req, res){
 //Whenever someone connects this gets executed
 io.on('connection', function(socket){
    console.log('A user connected');
+
+   // Send a message after a timeout of 4 seconds
+   setTimeout(function(){
+      socket.send('User is inactive for 4 seconds');
+   }, 4000);
+
    
    //Whenever someone disconnects this piece of code executed
    socket.on('disconnect', function () {
