@@ -21,26 +21,37 @@ io.on('connection', function(socket){
    console.log('A user connected');
 
    // Listening to the 'setUsername' event when a user sets a username
-   socket.on('setUsername', function(data){
-      console.log(data);
-
+   socket.on('setUsernameAndRoom', function(username, room){
+      console.log(username);
+      console.log(room);
       // Checking if the username is already taken
-      if(users.indexOf(data) > -1){
-         socket.emit('userExists', data + ' username is taken! Try some other username.');
+      if(users.indexOf(username) > -1){
+         socket.emit('userExists', username + ' username is taken! Try some other username.');
       } else {
-         users.push(data); // Adding the username to the users array if it is not taken
-         socket.emit('userSet', {username: data}); // Emitting the 'userSet' event to the client with the username data
+         users.push(username); // Adding the username to the users array if it is not taken
+         socket.username = username;
+         socket.room = room;
+         socket.join(room);
+         socket.emit('userSet', `You ${username} have successfully joined the room ${room}`);
+         socket.broadcast.to(room).emit('message', `${username} has joined this room`);
       }
 
    });
 
    // Listening to the 'msg' event when a user sends a message
-   socket.on('msg', function(data){
-      io.sockets.emit('newmsg', data); // Broadcasting the message to all connected clients
+   socket.on('message', function(message){
+    io.to(socket.room).emit('message', `${socket.username}: ${message}`);
    })
+
+   // Leave the room
+  socket.on('disconnect', () => {
+    console.log('user disconnected');
+    io.to(socket.room).emit('message', `${socket.username} has left this room`);
+    socket.leave(socket.room);
+  });
 });
 
 // Starting the server and listening on port 3000
-http.listen(3000, function(){
-   console.log('listening on *:3000');
+http.listen(3001, function(){
+   console.log('listening on *:3001');
 });
